@@ -1,17 +1,30 @@
 import ContactItem from 'components/ContactItem';
+import { connect } from 'react-redux';
+
 import PropTypes from 'prop-types';
 
-const ContactList = ({ contacts, onDelete }) => (
+const ContactList = ({ contacts }) => (
   <ul>
     {contacts.map(({ id, name, number }) => (
-      <ContactItem key={id} name={name} number={number} onDelete={onDelete} />
+      <ContactItem key={id} name={name} number={number} />
     ))}
   </ul>
 );
 
-ContactItem.propTypes = {
-  contacts: PropTypes.array,
-  onDelete: PropTypes.func,
+const getVisibleContacts = (allContacts, value) => {
+  const normalizedFilter = value.toLowerCase();
+
+  return allContacts.filter(contact =>
+    contact.name.toLowerCase().includes(normalizedFilter),
+  );
 };
 
-export default ContactList;
+const mapStateToProps = ({ items, filter }) => ({
+  contacts: getVisibleContacts(items, filter),
+});
+
+ContactItem.propTypes = {
+  contacts: PropTypes.array,
+};
+
+export default connect(mapStateToProps, null)(ContactList);
